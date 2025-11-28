@@ -139,19 +139,17 @@ The AI uses a "System Prompt" to decide how to categorize your spending. You can
 
 1. Open `GeminiAgent.gs`.
 
-2. Scroll down to the `CRITICAL CATEGORIZATION RULES` section (around line 30).
+2. Scroll down to the `Step 3: CATEGORIZE` section (around line 25).
 
-3. You will see lines like `- Travel: Includes Uber...`.
+3. **Edit the text** like you are talking to a human.
 
-4. **Edit this text** like you are talking to a human.
-
-   * *Example:* If you want a "Pet" category, add: `- Pets: Includes Chewy, Vet bills, and Petco.`
+   * *Example:* If you want a "Pet" category, add: `Pets` in the category bracket (line 26) and under `CRITICAL CATEGORIZATION RULES` add a new line of description like `- Pets: Includes Chewy, Vet bills, and Petco.`
 
    * *Example:* If you want "Target" to be "Groceries" instead of "Shopping", change the Grocery rule: `- Groceries: Supermarkets, food markets, and Target.`
 
 ## 🎁 Bonus: Email-to-Drive (Optional)
 
-Don't want to manually upload PDFs?
+Don't want to manually upload PDFs to Google Drive?
 
 1. Create a separate, dedicated Gmail account (e.g., `family.receipts@gmail.com`).
 
@@ -161,7 +159,7 @@ Don't want to manually upload PDFs?
 
 4. Paste the "Email Bridge" code (found in `EmailBridge.gs` in this repo).
 
-5. Update the `DESTINATION_FOLDER_ID` with your Inbox ID.
+5. Update the `DESTINATION_FOLDER_ID` in the first line with your Inbox ID.
 
 6. Set a trigger to run every 10 minutes.
 
