@@ -74,11 +74,96 @@ On the left side of the Apps Script editor, you will see `Code.gs`. We need to c
 
 * Copy the code from the `Code.gs` file in this repository and paste it in.
 
-* **ACTION REQUIRED:** Look at the top of the file. Update `EMAIL_RECIPIENTS` with your email, and update `ACCOUNT_MAP` with your real card last 4 digits.
+* **ACTION REQUIRED:** Look at the top of the file. Update `EMAIL_RECIPIENTS` with your email. Then, update `ACCOUNT_MAP` with all your accounts, mapping the real last 4 digits to the correct account owner.
 
   ```javascript
   const EMAIL_RECIPIENTS = "alex@example.com, sam@example.com";
   const ACCOUNT_MAP = {
-    "1234": { user: "Alex", bank: "Chase Sapphire" }, // Change "1234" to your card's last 4 digits
-    "5678": { user: "Sam", bank: "Amex Gold" }
-  };
+    "1234": { user: "Alex", bank: "Chase Sapphire" }, // Change "1234" to your card's last 4 digits, update your and bank's name.
+    "5678": { user: "Sam", bank: "Amex Gold" }, // Copy this line for additional account entries
+  };+
+  ```
+#### 2. `GeminiAgent.gs` (The Brain)
+
+* Click the **+** (Plus sign) next to **Files** > Select **Script**.
+
+* Name it `GeminiAgent` (Do not add .gs manually).
+
+* Copy the code from `GeminiAgent.gs` in this repository and paste it in.
+
+#### 3. `ReportGen.gs` (The Reporter)
+
+* Click the **+** (Plus sign) next to **Files** > Select **Script**.
+
+* Name it `ReportGen` (Do not add .gs manually).
+
+* Copy the code from `ReportGen.gs` in this repository and paste it in.
+
+#### 4. `EmailTemplate.html` (The Look)
+
+* Click the **+** (Plus sign) next to **Files** > Select **HTML**.
+
+* Name it `EmailTemplate` (Do not add .html manually).
+
+* Copy the code from `EmailTemplate.html` in this repository and paste it in.
+
+### Phase 5: Turn on the Automation
+
+1. Click the **Clock Icon (Triggers)** on the left sidebar.
+
+2. Click the blue **+ Add Trigger** button (bottom right).
+
+   * **Function:** `checkInbox` | **Event source:** Time-driven | **Timer:** Hour timer | **Interval:** Every hour.
+
+   * *Click Save.*
+
+3. Click **+ Add Trigger** again.
+
+   * **Function:** `generateMonthlyReport` | **Event source:** Time-driven | **Timer:** Month timer | **Day:** 1st | **Time:** 8am.
+
+   * *Click Save.*
+
+4. Click **+ Add Trigger** again.
+
+   * **Function:** `sendUploadReminder` | **Event source:** Time-driven | **Timer:** Month timer | **Day:** 28th.
+
+   * Be mindful that if you set it up to 29th, 30th, or 31st, the trigger will not run for the months that does not have these days. 
+
+   * *Click Save.*
+
+## 🎨 Customization: Teaching the AI
+
+The AI uses a "System Prompt" to decide how to categorize your spending. You can change this to fit your life!
+
+**To change categories:**
+
+1. Open `GeminiAgent.gs`.
+
+2. Scroll down to the `CRITICAL CATEGORIZATION RULES` section (around line 30).
+
+3. You will see lines like `- Travel: Includes Uber...`.
+
+4. **Edit this text** like you are talking to a human.
+
+   * *Example:* If you want a "Pet" category, add: `- Pets: Includes Chewy, Vet bills, and Petco.`
+
+   * *Example:* If you want "Target" to be "Groceries" instead of "Shopping", change the Grocery rule: `- Groceries: Supermarkets, food markets, and Target.`
+
+## 🎁 Bonus: Email-to-Drive (Optional)
+
+Don't want to manually upload PDFs?
+
+1. Create a separate, dedicated Gmail account (e.g., `family.receipts@gmail.com`).
+
+2. Go to your Main Account's Google Drive -> Right-click `Inbox` -> Share -> Add the new email address as **Editor**.
+
+3. Log into the *new* email account -> Go to script.google.com -> New Project.
+
+4. Paste the "Email Bridge" code (found in `EmailBridge.gs` in this repo).
+
+5. Update the `DESTINATION_FOLDER_ID` with your Inbox ID.
+
+6. Set a trigger to run every 10 minutes.
+
+7. **Done!** Just forward your statement PDF to this email, and it appears in your tracker automatically.
+
