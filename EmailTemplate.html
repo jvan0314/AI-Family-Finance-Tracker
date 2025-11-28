@@ -1,1 +1,206 @@
-(The Look)
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, sans-serif; color: #374151; }
+    .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; }
+    .header { background: #1f2937; color: white; padding: 20px; text-align: center; }
+    
+    /* ROW 1: Main Scorecard */
+    .scorecard { 
+      display: flex; 
+      justify-content: center; /* Center items */
+      gap: 30px; /* Add gaps */
+      margin-top: 15px; 
+      border-top: 1px solid #374151; 
+      padding-top: 15px; 
+    }
+    
+    /* ROW 2: User Scorecard */
+    .user-scorecard {
+      display: flex;
+      justify-content: center; /* Center items */
+      gap: 40px; /* Wider gap for user names */
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #374151; 
+    }
+
+    .score-item { 
+      flex: 0 1 auto; /* Don't stretch, just fit content */
+      text-align: center;
+      min-width: 80px; /* Ensure minimum width for alignment */
+    }
+    
+    .score-label { font-size: 10px; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.5px; }
+    .score-val { font-size: 16px; font-weight: 700; margin-top: 5px; }
+    .net-pos { color: #34d399; }
+    .net-neg { color: #f87171; }
+    .user-val { color: #e5e7eb; } 
+
+    .section { padding: 25px; border-bottom: 1px solid #e5e7eb; }
+    .sec-title { font-size: 14px; font-weight: 700; color: #111827; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    .insight-row { display: flex; align-items: flex-start; margin-bottom: 12px; font-size: 14px; }
+    .dot { font-size: 10px; margin-top: 5px; margin-right: 10px; }
+    .chart-img { width: 100%; height: auto; border-radius: 6px; border: 1px solid #f3f4f6; }
+    .full-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .full-table th { text-align: left; color: #9ca3af; font-weight: 600; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; font-size: 11px; text-transform: uppercase; }
+    .full-table td { padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .full-table .num { text-align: right; font-family: monospace; font-weight: 600; }
+    
+    /* AI Insight in Table */
+    .cat-insight { font-size: 11px; color: #6b7280; font-style: italic; margin-top: 2px; }
+    
+    .delta-pos { color: #ef4444; font-size: 11px; } 
+    .delta-neg { color: #10b981; font-size: 11px; } 
+    .tx-row { padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .tx-top { display: flex; justify-content: space-between; font-weight: 600; font-size: 13px; color: #111827; }
+    .tx-sub { display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; margin-top: 4px; }
+    .tx-reason { font-size: 11px; color: #ef4444; margin-top: 4px; font-style: italic; }
+    
+    .highlight-box { background: #f0fdf4; border-left: 3px solid #10b981; padding: 12px; margin-bottom: 10px; border-radius: 0 4px 4px 0; }
+    .highlight-text { font-size: 13px; color: #064e3b; }
+    .highlight-icon { margin-right: 8px; font-size: 14px; }
+    
+    .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 11px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div style="font-size: 14px; font-weight: 600;"><?= month ?> Financial Pulse</div>
+      
+      <!-- ROW 1: High Level Stats -->
+      <div class="scorecard">
+        <div class="score-item">
+          <div class="score-label">Income</div>
+          <div class="score-val">$<?= Math.round(fin.inflow).toLocaleString() ?></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Expenses</div>
+          <div class="score-val">$<?= Math.round(fin.outflow).toLocaleString() ?></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Net Flow</div>
+          <div class="score-val <?= fin.net >= 0 ? 'net-pos' : 'net-neg' ?>">
+            <?= fin.net >= 0 ? '+' : '' ?>$<?= Math.round(fin.net).toLocaleString() ?>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2: User Spend Breakdown (Centered) -->
+      <div class="user-scorecard">
+        <? var users = Object.entries(fin.users); ?>
+        <? for (var i = 0; i < users.length; i++) { ?>
+          <div class="score-item"> 
+            <div class="score-label"><?= users[i][0] ?></div> 
+            <div class="score-val user-val">$<?= Math.round(users[i][1]).toLocaleString() ?></div>
+          </div>
+        <? } ?>
+      </div>
+
+      <div style="margin-top: 15px; font-size: 11px; color: #9ca3af;">
+        Savings Rate: <?= Math.round(fin.savingsRate) ?>% 
+        (vs Last Month: <?= Math.round(prevFin.savingsRate) ?>%)
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">📝 Executive Summary (<?= modelUsed ?>)</div>
+      <? if (insights && insights.length > 0) { ?>
+        <? for (var i = 0; i < insights.length; i++) { ?>
+          <div class="insight-row">
+            <span class="dot"><?= insights[i].type === 'positive' ? '🟢' : (insights[i].type === 'negative' ? '🔴' : '🔵') ?></span>
+            <span><?= insights[i].text ?></span>
+          </div>
+        <? } ?>
+      <? } else { ?>
+        <div style="font-size: 13px; color: #6b7280;">No AI insights generated.</div>
+      <? } ?>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">📈 4-Month Cash Flow</div>
+      <!-- The image is embedded as Base64 by the script, so src needs to be replaced there -->
+      <img src="<?= trendUrl ?>" class="chart-img" />
+    </div>
+
+    <div class="section">
+      <div class="sec-title">👥 Who Spent What? (Highlights)</div>
+      <? if (granularHighlights && granularHighlights.length > 0) { ?>
+        <? for (var i = 0; i < granularHighlights.length; i++) { ?>
+          <div class="highlight-box">
+            <span class="highlight-icon"><?= granularHighlights[i].icon ?></span>
+            <span class="highlight-text"><?= granularHighlights[i].text ?></span>
+          </div>
+        <? } ?>
+      <? } else { ?>
+        <div style="font-size: 13px; color: #6b7280;">No granular highlights available.</div>
+      <? } ?>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">📊 Expense Breakdown</div>
+      <table class="full-table">
+        <thead>
+          <tr>
+            <th style="width: 40%">Category</th>
+            <th style="width: 20%; text-align:right;">Amount</th>
+            <th style="width: 20%; text-align:right;">% Total</th>
+            <th style="width: 20%; text-align:right;">vs Last Mo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? for (var i = 0; i < catTable.length; i++) { ?>
+            <tr>
+              <td style="font-weight: 500;">
+                <?= catTable[i].name ?>
+                <? if (catTable[i].insight) { ?>
+                  <div class="cat-insight">↳ <?= catTable[i].insight ?></div>
+                <? } ?>
+              </td>
+              <td class="num">$<?= Math.round(catTable[i].amount).toLocaleString() ?></td>
+              <td class="num" style="color:#6b7280;"><?= catTable[i].percent ?>%</td>
+              <td class="num">
+                <? var d = catTable[i].delta; ?>
+                <span class="<?= d > 0 ? 'delta-pos' : (d < 0 ? 'delta-neg' : '') ?>">
+                  <?= d > 0 ? '+' : '' ?>$<?= Math.round(d).toLocaleString() ?>
+                </span>
+              </td>
+            </tr>
+          <? } ?>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" style="border-bottom: none;">
+      <div class="sec-title">⚠️ Watchlist (Abnormal Items)</div>
+      <? if (!transactions || transactions.length === 0) { ?>
+        <div style="font-size: 13px; color: #6b7280; font-style: italic;">No abnormal transactions found.</div>
+      <? } else { ?>
+        <? for (var i = 0; i < transactions.length; i++) { ?>
+          <div class="tx-row">
+            <div class="tx-top">
+              <span><?= transactions[i].description ?></span>
+              <span>$<?= Math.abs(transactions[i].amount).toLocaleString() ?></span>
+            </div>
+            <div class="tx-sub">
+              <span><?= transactions[i].date ?> • <?= transactions[i].user ?> (<?= transactions[i].bank ?>)</span>
+              <span><?= transactions[i].category ?></span>
+            </div>
+            <? if (transactions[i].reason) { ?>
+              <div class="tx-reason">↳ <?= transactions[i].reason ?></div>
+            <? } ?>
+          </div>
+        <? } ?>
+      <? } ?>
+    </div>
+
+    <div class="footer">
+      Generated by Project Ledger • <?= modelUsed ?>
+    </div>
+  </div>
+</body>
+</html>
