@@ -18,7 +18,7 @@ Imagine a digital assistant that wakes up once an hour to check your drive for n
 
 1. **The Database:** It saves clean, standardized data into a Google Sheet.
 
-1. **The Report:** Every month the AI analyzes the data and emails you a "Financial Pulse" report with trends, charts, and insights.
+1. **The Report:** Every month the AI analyzes the data and emails you a "Financial Pulse" report with trends, charts, and insights. (see `demo_report.gs` in this repository as an example).
 
 ## 🛠️ Setup Guide (Start Here)
 
